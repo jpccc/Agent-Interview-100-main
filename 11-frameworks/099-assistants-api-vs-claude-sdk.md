@@ -5,7 +5,25 @@
 
 ## 简短回答
 
-OpenAI 和 Anthropic 分别推出了官方 Agent 开发方案，代表了两种不同的设计哲学。**OpenAI Agents SDK**（2025-03 发布，**底层基于新的 Responses API**——Responses API 才是 2025-08 deprecated 的 Assistants API 的直接替代者，Agents SDK 是其上层的轻量级编排框架）——核心概念仅三个：Agent（带指令和工具的 LLM）、Handoff（Agent 间任务交接）、Guardrails（输入/输出验证），强调"最小抽象、最大控制"，内置追踪但不强制托管状态；同时提供 **Python `openai-agents`** 与 **TypeScript `@openai/agents`** 双语言 SDK。**Anthropic Claude Agent SDK**（**2025-09** 从 `claude-code-sdk` 重命名而来，与 Claude Sonnet 4.5 同步发布）——基于 Claude Code 实战经验构建，核心特性：原生 MCP（Model Context Protocol）支持、Tool Permissions 细粒度授权、Subagent 派生、Hooks 机制，强调"工具优先"的 Agent 设计，与 MCP 生态深度绑定。关键差异：OpenAI SDK 是"模型无关的理想"但实际优化 OpenAI 模型；Claude SDK 明确绑定 Claude 模型但 MCP 是开放标准。OpenAI 走"SDK 轻+云重"路线（Responses API 在云端管理状态）；Anthropic 走"MCP 协议开放+SDK 原生集成"路线（MCP 连接万物）。选择建议：已在 OpenAI 生态 → Agents SDK；需要 MCP 工具生态 → Claude SDK；需要模型无关 → Vercel AI SDK 或自研。
+OpenAI 和 Anthropic 分别推出了官方 Agent 开发方案，代表了两种不同的设计哲学。
+
+**OpenAI Agents SDK**（2025-03 发布）：
+- 底层基于新的 **Responses API**（2025-08 deprecated 的 Assistants API 的直接替代者，Agents SDK 是其上层的轻量级编排框架）
+- 核心概念仅三个：Agent（带指令和工具的 LLM）、Handoff（Agent 间任务交接）、Guardrails（输入/输出验证）
+- 强调“最小抽象、最大控制”，内置追踪但不强制托管状态
+- 同时提供 Python `openai-agents` 与 TypeScript `@openai/agents` 双语言 SDK
+
+**Anthropic Claude Agent SDK**（2025-09 发布）：
+- 从 `claude-code-sdk` 重命名而来，与 Claude Sonnet 4.5 同步发布
+- 基于 Claude Code 实战经验构建
+- 核心特性：原生 MCP（Model Context Protocol）支持、Tool Permissions 细粒度授权、Subagent 派生、Hooks 机制
+- 强调“工具优先”的 Agent 设计，与 MCP 生态深度绑定
+
+**关键差异：**
+- OpenAI SDK 是“模型无关的理想”但实际优化 OpenAI 模型；Claude SDK 明确绑定 Claude 模型但 MCP 是开放标准
+- OpenAI 走“SDK 轻+云重”路线（Responses API 在云端管理状态）；Anthropic 走“MCP 协议开放+SDK 原生集成”路线
+
+**选择建议：** 已在 OpenAI 生态 → Agents SDK；需要 MCP 工具生态 → Claude SDK；需要模型无关 → Vercel AI SDK 或自研。
 
 ## 详细解析
 

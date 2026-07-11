@@ -5,7 +5,18 @@
 
 ## 简短回答
 
-设计可测试、可扩展的 Agent 框架抽象层，核心是将 Agent 系统分解为**职责清晰、边界明确、可独立替换**的模块，使每个模块可以被单独测试和扩展。关键架构原则：(1) **端口-适配器架构（Hexagonal Architecture）**——业务逻辑（Agent Loop、推理策略）在核心层，外部依赖（LLM API、工具、存储）通过接口（Port）隔离，具体实现（Adapter）可插拔替换；(2) **依赖注入（DI）**——LLM Client、Tool Registry、State Store 等通过构造函数注入，测试时可注入 Mock；(3) **中间件模式**——日志、追踪、安全检查等横切关注点通过可组合的中间件实现，不污染核心逻辑；(4) **策略模式**——推理策略（ReAct/Plan-Execute/CoT）、路由策略（模型选择）、重试策略等可插拔；(5) **事件驱动**——Agent 执行过程发出事件（on_llm_call、on_tool_use、on_step_complete），观测和扩展通过事件监听实现。测试策略：单元测试 Mock LLM 响应 → 集成测试用真实 API → 端到端测试验证完整工作流。OpenAI Agents SDK 的"最小抽象"和 LangChain 1.0 的"中间件架构"都是这些原则的实际体现。
+设计可测试、可扩展的 Agent 框架抽象层，核心是将 Agent 系统分解为**职责清晰、边界明确、可独立替换**的模块，使每个模块可以被单独测试和扩展。
+
+**关键架构原则：**
+1. **端口-适配器架构（Hexagonal Architecture）** — 业务逻辑（Agent Loop、推理策略）在核心层，外部依赖（LLM API、工具、存储）通过接口（Port）隔离，具体实现（Adapter）可插拔替换
+2. **依赖注入（DI）** — LLM Client、Tool Registry、State Store 等通过构造函数注入，测试时可注入 Mock
+3. **中间件模式** — 日志、追踪、安全检查等横切关注点通过可组合的中间件实现，不污染核心逻辑
+4. **策略模式** — 推理策略（ReAct/Plan-Execute/CoT）、路由策略（模型选择）、重试策略等可插拔
+5. **事件驱动** — Agent 执行过程发出事件（on_llm_call、on_tool_use、on_step_complete），观测和扩展通过事件监听实现
+
+**测试策略：** 单元测试 Mock LLM 响应 → 集成测试用真实 API → 端到端测试验证完整工作流。
+
+OpenAI Agents SDK 的“最小抽象”和 LangChain 1.0 的“中间件架构”都是这些原则的实际体现。
 
 ## 详细解析
 

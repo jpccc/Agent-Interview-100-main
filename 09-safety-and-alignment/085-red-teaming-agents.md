@@ -5,7 +5,20 @@
 
 ## 简短回答
 
-Red Teaming 是以攻击者视角主动探测 AI Agent 系统漏洞的安全测试方法——在恶意用户发现漏洞之前，由专业团队先找到并修复。2025 年 LLM Red Teaming 已从"可选的安全实践"发展为**合规必需**（EU AI Act 要求高风险 AI 系统进行文档化的对抗测试）。核心测试维度：(1) **Prompt Injection**——直接和间接注入攻击（OWASP 连续两年列为 #1 威胁）；(2) **Jailbreak**——绕过安全护栏；(3) **数据泄露**——诱导 Agent 泄露系统提示、内部数据或 PII；(4) **工具滥用**——操纵 Agent 执行未授权操作；(5) **多 Agent 攻击**——Agent-in-the-Middle（AiTM）拦截和篡改 Agent 间通信。主要框架和工具：**MITRE ATLAS**（2025 年更新，66 种 AI 攻击技术）、**Microsoft PyRIT**（企业级自动化 Red Team 工具）、**NVIDIA Garak**（LLM 漏洞扫描器）、**DeepTeam/Promptfoo**（开源 Red Team 框架）。Meta 的 **"Agents Rule of Two"**（2025-10，源自 Simon Willison 的"致命三角"，详见 078 / 081）原则：单个 Agent 会话不应同时具备 [A] 处理不可信输入、[B] 访问敏感数据、[C] 改变状态/对外通信 这三个能力，最多两个——这是当前业界最具可操作性的 Agent 安全设计准则。建议每季度进行一次系统性对抗测试。
+Red Teaming 是以攻击者视角主动探测 AI Agent 系统漏洞的安全测试方法——在恶意用户发现漏洞之前，由专业团队先找到并修复。2025 年 LLM Red Teaming 已从“可选的安全实践”发展为**合规必需**（EU AI Act 要求高风险 AI 系统进行文档化的对抗测试）。
+
+**核心测试维度：**
+1. **Prompt Injection** — 直接和间接注入攻击（OWASP 连续两年列为 #1 威胁）
+2. **Jailbreak** — 绕过安全护栏
+3. **数据泄露** — 诱导 Agent 泄露系统提示、内部数据或 PII
+4. **工具滥用** — 操纵 Agent 执行未授权操作
+5. **多 Agent 攻击** — Agent-in-the-Middle（AiTM）拦截和篡改 Agent 间通信
+
+**主要框架和工具：** MITRE ATLAS（2025 年更新，66 种 AI 攻击技术）、Microsoft PyRIT（企业级自动化 Red Team 工具）、NVIDIA Garak（LLM 漏洞扫描器）、DeepTeam/Promptfoo（开源 Red Team 框架）。
+
+> **Meta 的 “Agents Rule of Two”**（2025-10，源自 Simon Willison 的“致命三角”，详见 078/081）：单个 Agent 会话不应同时具备 [A] 处理不可信输入、[B] 访问敏感数据、[C] 改变状态/对外通信 这三个能力，最多两个——这是当前业界最具可操作性的 Agent 安全设计准则。
+
+建议每季度进行一次系统性对抗测试。
 
 ## 详细解析
 

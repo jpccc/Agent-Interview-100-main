@@ -5,7 +5,17 @@
 
 ## 简短回答
 
-权限最小化（Least Privilege）和沙箱执行（Sandboxing）是 Agent 安全的两大核心工程实践。**权限最小化**要求 Agent 只拥有完成当前任务所需的最小权限集——不给数据库写权限给只需要读的 Agent，不给全网访问给只需要调特定 API 的 Agent。**沙箱执行**则是将 Agent 的代码执行、文件操作等高危行为隔离在受限环境中，即使 Agent 被攻击也无法影响宿主系统。2025 年的关键趋势：传统的静态权限模型不适合 Agent——因为 Agent 在运行时动态决定行为，需要**动态运行时权限管理**（如 AI Identity Gateway，为每次请求颁发最小权限令牌）。OWASP Agent 安全清单将"工具滥用与权限提升"列为核心威胁。实际案例：Devin AI Agent 被间接 Prompt Injection 攻击，泄露了环境变量和密钥（Johann Rehberger 在 "Month of AI Bugs" 系列中披露，2025-08）。防御架构：权限策略即代码（OPA）+ 临时性执行环境（gVisor/microVM）+ 出口白名单 + 人工审批高危操作。
+权限最小化（Least Privilege）和沙箱执行（Sandboxing）是 Agent 安全的两大核心工程实践。
+
+**权限最小化：** 要求 Agent 只拥有完成当前任务所需的最小权限集——不给数据库写权限给只需要读的 Agent，不给全网访问给只需要调特定 API 的 Agent。
+
+**沙箱执行：** 将 Agent 的代码执行、文件操作等高危行为隔离在受限环境中，即使 Agent 被攻击也无法影响宿主系统。
+
+**2025 关键趋势：** 传统的静态权限模型不适合 Agent——因为 Agent 在运行时动态决定行为，需要**动态运行时权限管理**（如 AI Identity Gateway，为每次请求颁发最小权限令牌）。OWASP Agent 安全清单将“工具滥用与权限提升”列为核心威胁。
+
+> **实际案例：** Devin AI Agent 被间接 Prompt Injection 攻击，泄露了环境变量和密钥（Johann Rehberger 在 “Month of AI Bugs” 系列中披露，2025-08）。
+
+**防御架构：** 权限策略即代码（OPA）+ 临时性执行环境（gVisor/microVM）+ 出口白名单 + 人工审批高危操作。
 
 ## 详细解析
 

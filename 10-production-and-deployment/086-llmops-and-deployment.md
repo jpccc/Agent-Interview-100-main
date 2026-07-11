@@ -5,9 +5,24 @@
 
 ## 简短回答
 
-**LLMOps** 是专门为 LLM 驱动应用设计的运维实践体系，是 MLOps 在大语言模型时代的演进。与 MLOps 的核心区别：MLOps 以**训练模型**为核心（数据→特征→训练→部署），LLMOps 以**使用模型**为核心（Prompt→RAG→评估→部署），主要成本从训练 GPU 转移到**运行时推理 API**，迭代周期从周/月级缩短到小时/天级，核心产物从模型文件变为 **Prompt、向量索引、工具配置、护栏规则**，评估方式从精确指标（AUC/F1）转为 **LLM-as-Judge + 人工评估**。
+**LLMOps** 是专门为 LLM 驱动应用设计的运维实践体系，是 MLOps 在大语言模型时代的演进。
 
-**生产级 Agent 部署架构**包含五个核心层：(1) **接入层**——API Gateway 负责认证、限流、路由，支持 WebSocket/SSE 流式响应；(2) **Agent 编排层**——Agent 运行时（LangGraph、自研框架）管理推理循环、工具调用、状态管理；(3) **模型网关层**——LLM Gateway（LiteLLM/Portkey）统一多模型 API、故障转移、Prompt 缓存；(4) **数据与工具层**——向量数据库（RAG）、工具服务（MCP）、持久化存储；(5) **可观测性层**——Trace 追踪（Langfuse）、指标监控（Prometheus）、告警。2025 关键趋势：**Context Engineering 成为核心学科**、**Plan-then-Execute** 优于 ReAct、**MCP 协议**成工具集成行业标准。部署策略推荐：先用 Serverless 快速上线，按需迁移到 K8s。
+**与 MLOps 的核心区别：**
+- MLOps 以**训练模型**为核心（数据→特征→训练→部署）
+- LLMOps 以**使用模型**为核心（Prompt→RAG→评估→部署）
+- 主要成本从训练 GPU 转移到**运行时推理 API**
+- 迭代周期从周/月级缩短到小时/天级
+- 核心产物从模型文件变为 **Prompt、向量索引、工具配置、护栏规则**
+- 评估方式从精确指标（AUC/F1）转为 **LLM-as-Judge + 人工评估**
+
+**生产级 Agent 部署架构五层：**
+1. **接入层** — API Gateway 负责认证、限流、路由，支持 WebSocket/SSE 流式响应
+2. **Agent 编排层** — Agent 运行时（LangGraph、自研框架）管理推理循环、工具调用、状态管理
+3. **模型网关层** — LLM Gateway（LiteLLM/Portkey）统一多模型 API、故障转移、Prompt 缓存
+4. **数据与工具层** — 向量数据库（RAG）、工具服务（MCP）、持久化存储
+5. **可观测性层** — Trace 追踪（Langfuse）、指标监控（Prometheus）、告警
+
+**2025 关键趋势：** Context Engineering 成为核心学科、Plan-then-Execute 优于 ReAct、MCP 协议成工具集成行业标准。部署策略推荐：先用 Serverless 快速上线，按需迁移到 K8s。
 
 LLMOps 不替代 MLOps，而是在其基础上扩展，企业通常需要两者协同工作。
 

@@ -5,7 +5,19 @@
 
 ## 简短回答
 
-LLM/Agent 评估工具分为两大类：**评估框架**（定义指标和运行评估，如 Ragas、DeepEval）和**评估平台**（提供完整的评估+监控+协作能力，如 LangSmith、Braintrust、Langfuse）。**Ragas** 专注于 RAG 评估，提供 Faithfulness、Answer Relevancy、Context Precision 等 RAG 专用指标；**LangSmith** 是 LangChain 生态的全栈平台，强在 Trace + 评估 + Playground 一体化；**Braintrust** 专注于评估和 Prompt 迭代，强在 A/B 测试和在线评估；**Langfuse** 是最流行的开源替代方案，支持 OTel 和多种框架。选择原则：RAG 专项评估 → Ragas；LangChain 生态 → LangSmith；框架无关 + 开源 → Langfuse；专业评估工作流 → Braintrust。
+LLM/Agent 评估工具分为两大类：**评估框架**（定义指标和运行评估）和**评估平台**（提供完整的评估+监控+协作能力）。
+
+**主要工具对比：**
+1. **Ragas** — 专注于 RAG 评估，提供 Faithfulness、Answer Relevancy、Context Precision 等 RAG 专用指标
+2. **LangSmith** — LangChain 生态的全栈平台，强在 Trace + 评估 + Playground 一体化
+3. **Braintrust** — 专注于评估和 Prompt 迭代，强在 A/B 测试和在线评估
+4. **Langfuse** — 最流行的开源替代方案，支持 OTel 和多种框架
+
+**选择原则：**
+- RAG 专项评估 → Ragas
+- LangChain 生态 → LangSmith
+- 框架无关 + 开源 → Langfuse
+- 专业评估工作流 → Braintrust
 
 ## 详细解析
 
@@ -35,6 +47,13 @@ LLM 评估生态：
 
 ### Ragas：RAG 评估专家
 
+| 指标 | 含义 | 计算方法 | 范围 |
+|------|------|----------|------|
+| **Faithfulness** | 回答是否基于检索到的上下文（非幻觉） | 提取回答中的声明 → 检查每个声明是否被上下文支持 | 0-1，越高越好 |
+| **Answer Relevancy** | 回答与问题的相关程度 | 从回答反向生成问题 → 比较生成问题与原问题的相似度 | 0-1 |
+| **Context Precision** | 检索到的上下文中有多少是相关的 | 在检索结果中，相关段落的排名越高分越高 | 0-1 |
+| **Context Recall** | 相关信息是否都被检索到了 | 参考答案中的信息是否都能在检索上下文中找到 | 0-1 |
+
 ```python
 from ragas import evaluate
 from ragas.metrics import (
@@ -43,30 +62,6 @@ from ragas.metrics import (
     context_precision,
     context_recall,
 )
-
-# Ragas 的 RAG 专用指标
-ragas_metrics = {
-    "Faithfulness": {
-        "含义": "回答是否基于检索到的上下文（非幻觉）",
-        "计算": "提取回答中的声明 → 检查每个声明是否被上下文支持",
-        "范围": "0-1，越高越好",
-    },
-    "Answer Relevancy": {
-        "含义": "回答与问题的相关程度",
-        "计算": "从回答反向生成问题 → 比较生成问题与原问题的相似度",
-        "范围": "0-1",
-    },
-    "Context Precision": {
-        "含义": "检索到的上下文中有多少是相关的",
-        "计算": "在检索结果中，相关段落的排名越高分越高",
-        "范围": "0-1",
-    },
-    "Context Recall": {
-        "含义": "相关信息是否都被检索到了",
-        "计算": "参考答案中的信息是否都能在检索上下文中找到",
-        "范围": "0-1",
-    },
-}
 
 # 使用示例
 result = evaluate(
@@ -94,7 +89,6 @@ langsmith_features = {
     "Monitoring": "生产环境的实时监控",
     "Annotation": "人工标注和反馈收集",
 }
-
 # 运行评估
 def correctness_evaluator(run, example):
     """自定义评估器"""
@@ -124,7 +118,6 @@ braintrust_features = {
     "A/B Testing": "内置的 Prompt A/B 测试",
     "Logging": "自动记录所有 LLM 调用",
 }
-
 # 运行评估
 @braintrust.traced
 def my_task(input):
@@ -161,7 +154,6 @@ langfuse_features = {
     "Cost Tracking": "自动追踪 LLM 成本",
     "Prompt Management": "Prompt 版本管理",
 }
-
 # 使用示例
 trace = langfuse.trace(name="agent-task")
 span = trace.span(name="llm-call", input=prompt)

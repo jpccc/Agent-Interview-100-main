@@ -5,7 +5,13 @@
 
 ## 简短回答
 
-多 Agent 系统的调试和监控比单 Agent 困难得多——非确定性输出、跨 Agent 交互、隐式依赖和涌现行为使得问题难以复现和定位。核心方法是**分布式追踪（Distributed Tracing）**：用 Trace 和 Span 记录每个 Agent 的每一步操作，形成可视化的执行图。行业正在收敛到 **OpenTelemetry (OTEL)** 作为标准遥测协议。主流工具包括 Langfuse（开源）、LangSmith（LangChain 生态）、Arize AI、Braintrust、Maxim AI 等。关键指标包括：延迟、token 用量/成本、工具调用成功率、Handoff 成功率、以及输出质量评分。
+多 Agent 系统的调试和监控比单 Agent 困难得多——非确定性输出、跨 Agent 交互、隐式依赖和涌现行为使得问题难以复现和定位。
+
+**核心方法：** 分布式追踪（Distributed Tracing）——用 Trace 和 Span 记录每个 Agent 的每一步操作，形成可视化的执行图。行业正在收敛到 **OpenTelemetry (OTEL)** 作为标准遥测协议。
+
+**主流工具：** Langfuse（开源）、LangSmith（LangChain 生态）、Arize AI、Braintrust、Maxim AI 等。
+
+**关键指标：** 延迟、token 用量/成本、工具调用成功率、Handoff 成功率、以及输出质量评分。
 
 ## 详细解析
 
@@ -110,35 +116,21 @@ async def refund_agent(context):
 
 ### 关键监控指标
 
-```python
-monitoring_metrics = {
-    # 性能指标
-    "latency": {
-        "per_agent": "每个 Agent 的处理时间",
-        "end_to_end": "用户请求到最终响应的总时间",
-        "tool_calls": "每次工具调用的延迟",
-    },
-    # 成本指标
-    "tokens": {
-        "input_tokens": "每个 Agent 的输入 token 数",
-        "output_tokens": "每个 Agent 的输出 token 数",
-        "total_cost": "按模型定价计算的总成本",
-    },
-    # 质量指标
-    "quality": {
-        "tool_call_success_rate": "工具调用成功率",
-        "handoff_success_rate": "Handoff 成功率（无上下文丢失）",
-        "task_completion_rate": "任务完成率",
-        "output_quality_score": "LLM-as-Judge 质量评分",
-    },
-    # 健康指标
-    "health": {
-        "error_rate": "各 Agent 的错误率",
-        "retry_count": "重试次数",
-        "circuit_breaker_trips": "断路器触发次数",
-    },
-}
-```
+| 类别 | 指标 | 说明 |
+|------|------|------|
+| **性能** | per_agent | 每个 Agent 的处理时间 |
+| | end_to_end | 用户请求到最终响应的总时间 |
+| | tool_calls | 每次工具调用的延迟 |
+| **成本** | input_tokens | 每个 Agent 的输入 token 数 |
+| | output_tokens | 每个 Agent 的输出 token 数 |
+| | total_cost | 按模型定价计算的总成本 |
+| **质量** | tool_call_success_rate | 工具调用成功率 |
+| | handoff_success_rate | Handoff 成功率（无上下文丢失） |
+| | task_completion_rate | 任务完成率 |
+| | output_quality_score | LLM-as-Judge 质量评分 |
+| **健康** | error_rate | 各 Agent 的错误率 |
+| | retry_count | 重试次数 |
+| | circuit_breaker_trips | 断路器触发次数 |
 
 ### 调试工作流
 

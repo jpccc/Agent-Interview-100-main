@@ -5,7 +5,13 @@
 
 ## 简短回答
 
-**Context Engineering** 是一种从"如何写好单条 Prompt"到"如何为 LLM 构建完整、精准上下文"的范式转变。它关注的核心问题不再是措辞技巧，而是**上下文的选择、组装与管理**。一个 LLM 调用的效果，70% 取决于喂给它的上下文质量，而非 Prompt 本身的遣词造句。Context Engineering 将上下文视为四大来源的动态组合：**System Prompt**、**Tool Results**、**Conversation History** 和 **External Knowledge**（RAG / API）。其核心挑战在于**上下文窗口是有限的"房地产"**——必须在有限的 token 预算内，为当前任务挑选信息密度最高的上下文片段。在 **Agentic 场景**中，这一挑战尤为突出：多轮 tool call 会持续积累上下文，若不加管理，关键信息会被淹没在噪声中，导致 Agent 性能急剧下降。
+**Context Engineering** 是一种从“如何写好单条 Prompt”到“如何为 LLM 构建完整、精准上下文”的范式转变。它关注的核心问题不再是措辞技巧，而是 **上下文的选择、组装与管理**。
+
+**核心观点：** 一个 LLM 调用的效果，70% 取决于喂给它的上下文质量，而非 Prompt 本身的遣词造句。
+
+**上下文四大来源：** System Prompt、Tool Results、Conversation History、External Knowledge（RAG / API）。
+
+**核心挑战：** 上下文窗口是有限的“房地产”——必须在有限的 token 预算内，为当前任务挑选信息密度最高的上下文片段。在 Agentic 场景中尤为突出：多轮 tool call 会持续积累上下文，若不加管理，关键信息会被淹没在噪声中，导致 Agent 性能急剧下降。
 
 ## 详细解析
 

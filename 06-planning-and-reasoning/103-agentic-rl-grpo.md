@@ -5,7 +5,15 @@
 
 ## 简短回答
 
-**Agentic-RL** 是指用强化学习训练 LLM Agent 的工具调用、多步规划和任务执行能力，区别于传统 **RLHF** 只对齐人类偏好——Agentic-RL 的奖励信号来自**任务完成度**而非人类评分。典型训练流程为 **SFT 冷启动 → Reward Model / 规则奖励 → RL 策略优化**，其中 **GRPO（Group Relative Policy Optimization）** 是 DeepSeek 提出的核心算法，与 PPO 的关键差异在于 GRPO **不需要 Critic Model**，而是对同一 prompt 采样一组响应，用组内相对排名计算 advantage，大幅降低了训练成本。奖励函数的设计是 Agentic-RL 的核心难点，通常包括**任务完成度、工具使用准确率、步骤简洁性和格式遵循度**四个维度。DeepSeek-R1 的训练范式证明，通过大规模 RL（GRPO）训练，模型可以自主涌现出复杂的推理和工具使用策略，无需人工逐步示范。
+**Agentic-RL** 是指用强化学习训练 LLM Agent 的工具调用、多步规划和任务执行能力，区别于传统 RLHF 只对齐人类偏好——Agentic-RL 的奖励信号来自 **任务完成度** 而非人类评分。
+
+**典型训练流程：** SFT 冷启动 → Reward Model / 规则奖励 → RL 策略优化
+
+**核心算法 GRPO（Group Relative Policy Optimization）：** DeepSeek 提出，与 PPO 的关键差异在于 GRPO **不需要 Critic Model**，而是对同一 prompt 采样一组响应，用组内相对排名计算 advantage，大幅降低了训练成本。
+
+**奖励函数设计（四个维度）：** 任务完成度、工具使用准确率、步骤简洁性和格式遵循度。
+
+**关键发现：** DeepSeek-R1 的训练范式证明，通过大规模 RL（GRPO）训练，模型可以自主涌现出复杂的推理和工具使用策略，无需人工逐步示范。
 
 ## 详细解析
 

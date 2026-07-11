@@ -5,7 +5,13 @@
 
 ## 简短回答
 
-**Zero-shot Prompting** 不提供任何示例，直接描述任务让 LLM 执行——依赖模型从预训练中学到的通用能力。**Few-shot Prompting** 在 Prompt 中提供 2-5 个输入输出示例，让模型通过"模仿"理解任务格式和期望。选择原则：**任务简单且模型理解充分 → Zero-shot**（更省 token、更灵活）；**任务有特定格式/逻辑或模型表现不稳定 → Few-shot**（更准确、更一致）。研究表明 Few-shot 在分类和格式化任务上优势显著，但在复杂推理任务上，Few-shot 的优势被 CoT 等推理增强技术压缩。随着模型能力提升（GPT-4、Claude Opus 等），Zero-shot 的能力边界在不断扩大——很多过去需要 Few-shot 的任务现在 Zero-shot 就能做好。
+**Zero-shot Prompting** 不提供任何示例，直接描述任务让 LLM 执行——依赖模型从预训练中学到的通用能力。**Few-shot Prompting** 在 Prompt 中提供 2-5 个输入输出示例，让模型通过“模仿”理解任务格式和期望。
+
+**选择原则：**
+- 任务简单且模型理解充分 → **Zero-shot**（更省 token、更灵活）
+- 任务有特定格式/逻辑或模型表现不稳定 → **Few-shot**（更准确、更一致）
+
+研究表明 Few-shot 在分类和格式化任务上优势显著，但在复杂推理任务上，Few-shot 的优势被 CoT 等推理增强技术压缩。随着模型能力提升（GPT-4、Claude Opus 等），Zero-shot 的能力边界在不断扩大。
 
 ## 详细解析
 

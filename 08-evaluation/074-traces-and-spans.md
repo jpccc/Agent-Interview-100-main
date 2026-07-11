@@ -5,7 +5,18 @@
 
 ## 简短回答
 
-Trace 和 Span 是分布式追踪（Distributed Tracing）的核心概念，被引入 LLM/Agent 系统用于实现**执行可观测性**——理解 Agent "做了什么、花了多久、哪里出了问题"。**Trace** 代表一次完整的 Agent 执行（从接收任务到返回结果），**Span** 代表 Trace 中的一个操作单元（如一次 LLM 调用、一次工具调用、一次检索）。Span 之间有父子关系，形成树形结构，清晰展示 Agent 的决策链。**OpenTelemetry (OTel)** 是 LLM 可观测性的主流方向——OTel GenAI Special Interest Group 维护的 **Semantic Conventions for Generative AI** 截至 2026-05 仍处于 **Development 阶段（尚未 Stable）**，定义了 GenAI 相关的语义约定（`gen_ai.system`、`gen_ai.request.model` 等属性）。主流工具（Langfuse、LangSmith 2026-01 起 end-to-end native OTel、Arize Phoenix）都已支持，但 API 名字可能在 GA 前微调，生产接入建议固定到具体语义版本。
+Trace 和 Span 是分布式追踪（Distributed Tracing）的核心概念，被引入 LLM/Agent 系统用于实现**执行可观测性**——理解 Agent "做了什么、花了多久、哪里出了问题"。
+
+**核心概念：**
+1. **Trace** — 代表一次完整的 Agent 执行（从接收任务到返回结果）
+2. **Span** — 代表 Trace 中的一个操作单元（如一次 LLM 调用、一次工具调用、一次检索）
+3. **父子关系** — Span 之间形成树形结构，清晰展示 Agent 的决策链
+
+**OpenTelemetry (OTel) 现状：**
+- OTel GenAI Special Interest Group 维护的 **Semantic Conventions for Generative AI** 截至 2026-05 仍处于 **Development 阶段（尚未 Stable）**
+- 定义了 GenAI 相关的语义约定（`gen_ai.system`、`gen_ai.request.model` 等属性）
+- 主流工具（Langfuse、LangSmith 2026-01 起 end-to-end native OTel、Arize Phoenix）都已支持
+- API 名字可能在 GA 前微调，生产接入建议固定到具体语义版本
 
 ## 详细解析
 
@@ -108,59 +119,26 @@ class ObservableAgent:
 
 ### GenAI 语义约定（OTel 标准）
 
-```python
-# OTel 为 GenAI 定义的标准属性
-otel_genai_attributes = {
-    # 系统信息
-    "gen_ai.system": "openai / anthropic / google",
-    "gen_ai.request.model": "gpt-4o / claude-sonnet-4-5",
-
-    # 请求参数
-    "gen_ai.request.temperature": 0.7,
-    "gen_ai.request.max_tokens": 4096,
-    "gen_ai.request.top_p": 1.0,
-
-    # 使用统计
-    "gen_ai.usage.input_tokens": 150,
-    "gen_ai.usage.output_tokens": 300,
-
-    # Agent 特定
-    "gen_ai.agent.name": "research-agent",
-    "gen_ai.agent.step": "planning",
-
-    # 工具调用
-    "gen_ai.tool.name": "web_search",
-    "gen_ai.tool.call_id": "call_abc123",
-}
-```
+| 属性 | 说明 | 示例值 |
+|------|------|--------|
+| `gen_ai.system` | 系统信息 | openai / anthropic / google |
+| `gen_ai.request.model` | 请求模型 | gpt-4o / claude-sonnet-4-5 |
+| `gen_ai.request.temperature` | 请求参数 | 0.7 |
+| `gen_ai.request.max_tokens` | 请求参数 | 4096 |
+| `gen_ai.request.top_p` | 请求参数 | 1.0 |
+| `gen_ai.usage.input_tokens` | 使用统计 | 150 |
+| `gen_ai.usage.output_tokens` | 使用统计 | 300 |
+| `gen_ai.agent.name` | Agent 特定 | research-agent |
+| `gen_ai.agent.step` | Agent 特定 | planning |
+| `gen_ai.tool.name` | 工具调用 | web_search |
+| `gen_ai.tool.call_id` | 工具调用 | call_abc123 |
 
 ### 可观测性的三大支柱在 Agent 中的应用
-
-```python
-observability_pillars = {
-    "Traces（追踪）": {
-        "作用": "追踪 Agent 的完整执行路径",
-        "回答": "Agent 做了什么？每步花了多久？",
-        "工具": "Jaeger, Zipkin, Langfuse, LangSmith",
-    },
-    "Metrics（指标）": {
-        "作用": "量化 Agent 的性能和健康状态",
-        "关键指标": [
-            "请求延迟（P50/P95/P99）",
-            "Token 消耗量",
-            "工具调用成功率",
-            "任务完成率",
-            "每次请求的成本",
-        ],
-        "工具": "Prometheus, Datadog, Grafana",
-    },
-    "Logs（日志）": {
-        "作用": "记录详细的事件和错误",
-        "内容": "LLM 的输入输出、工具参数和返回值、错误堆栈",
-        "工具": "ELK Stack, CloudWatch",
-    },
-}
-```
+| 支柱 | 作用 | 关键内容 | 工具 |
+|------|------|----------|------|
+| **Traces（追踪）** | 追踪 Agent 的完整执行路径 | Agent 做了什么？每步花了多久？ | Jaeger, Zipkin, Langfuse, LangSmith |
+| **Metrics（指标）** | 量化 Agent 的性能和健康状态 | 请求延迟（P50/P95/P99）、Token 消耗量、工具调用成功率、任务完成率、每次请求的成本 | Prometheus, Datadog, Grafana |
+| **Logs（日志）** | 记录详细的事件和错误 | LLM 的输入输出、工具参数和返回值、错误堆栈 | ELK Stack, CloudWatch |
 
 ### 实际调试场景
 

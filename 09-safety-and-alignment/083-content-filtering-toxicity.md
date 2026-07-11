@@ -5,7 +5,16 @@
 
 ## 简短回答
 
-内容过滤（Content Filtering）和毒性检测（Toxicity Detection）是 Agent 系统防止生成或传播有害内容的关键安全机制。在 GenAI 时代，内容审核需要从"事后审查"转变为**实时拦截**——在 Agent 的输入和输出环节同时部署。实现方式分为三种：(1) **规则型过滤**——关键词黑名单、正则匹配（快速低成本，但易被变体绕过）；(2) **专用分类器**——训练专门的毒性分类模型（如 Perspective API、Llama Guard、Granite HAP），准确率可达 90%+ 且延迟低；(3) **LLM-as-Moderator**——用大模型理解上下文语义来判断（最智能但最慢最贵）。2025 年的最佳实践是**多层级联**：规则型快速过滤明显违规 → 分类器处理常见毒性模式 → LLM 处理需要上下文理解的边界情况。开源安全模型（Llama Guard 3、ShieldGemma、Granite Guardian）已达到商用水准。一个重要发现：在毒性分类任务上，传统轻量 NN 分类器（38M 参数）在召回率上显著优于 LLM in-context learning（0.96 vs 0.78），且计算成本低得多。
+内容过滤（Content Filtering）和毒性检测（Toxicity Detection）是 Agent 系统防止生成或传播有害内容的关键安全机制。在 GenAI 时代，内容审核需要从“事后审查”转变为**实时拦截**——在 Agent 的输入和输出环节同时部署。
+
+**三种实现方式：**
+1. **规则型过滤** — 关键词黑名单、正则匹配（快速低成本，但易被变体绕过）
+2. **专用分类器** — 训练专门的毒性分类模型（如 Perspective API、Llama Guard、Granite HAP），准确率可达 90%+ 且延迟低
+3. **LLM-as-Moderator** — 用大模型理解上下文语义来判断（最智能但最慢最贵）
+
+**2025 最佳实践：** 多层级联——规则型快速过滤明显违规 → 分类器处理常见毒性模式 → LLM 处理需要上下文理解的边界情况。开源安全模型（Llama Guard 3、ShieldGemma、Granite Guardian）已达到商用水准。
+
+> **重要发现：** 在毒性分类任务上，传统轻量 NN 分类器（38M 参数）在召回率上显著优于 LLM in-context learning（0.96 vs 0.78），且计算成本低得多。
 
 ## 详细解析
 

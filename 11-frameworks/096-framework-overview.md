@@ -5,7 +5,19 @@
 
 ## 简短回答
 
-2025 年 AI Agent 框架呈现三足鼎立格局：**LangChain** 是最全能的"瑞士军刀"——生态最大、功能最全、社区最活跃（GitHub 100k+ Stars），适合快速原型和复杂 Agent 编排，但抽象层多、学习曲线陡；**LlamaIndex** 是"数据专家"——专注于数据连接和 RAG，提供 160+ 数据源连接器，在检索场景下性能最优（检索速度最快），适合知识密集型应用；**Haystack** 是"生产派"——由 deepset 开发，Pipeline 架构清晰、模块化程度高，适合需要稳定运行的企业级生产部署。选择建议：快速原型+复杂 Agent → LangChain；数据密集型 RAG → LlamaIndex；生产稳定性优先 → Haystack。实际项目中三者并非互斥——LlamaIndex 可作为 LangChain 的检索后端，Haystack 的 Pipeline 可集成 LangChain 组件。2025 年新兴框架如 CrewAI（多 Agent 编排）、Semantic Kernel（微软企业级）、Agno（极速轻量）也在快速崛起。
+2025 年 AI Agent 框架呈现三足鼎立格局：
+
+**三大框架对比：**
+1. **LangChain** — 最全能的“瑞士军刀”，生态最大、功能最全、社区最活跃（GitHub 100k+ Stars），适合快速原型和复杂 Agent 编排，但抽象层多、学习曲线陡
+2. **LlamaIndex** — “数据专家”，专注于数据连接和 RAG，提供 160+ 数据源连接器，检索场景下性能最优，适合知识密集型应用
+3. **Haystack** — “生产派”，由 deepset 开发，Pipeline 架构清晰、模块化程度高，适合需要稳定运行的企业级生产部署
+
+**选择建议：**
+- 快速原型+复杂 Agent → LangChain
+- 数据密集型 RAG → LlamaIndex
+- 生产稳定性优先 → Haystack
+
+实际项目中三者并非互斥——LlamaIndex 可作为 LangChain 的检索后端，Haystack 的 Pipeline 可集成 LangChain 组件。2025 年新兴框架如 CrewAI（多 Agent 编排）、Semantic Kernel（微软企业级）、Agno（极速轻量）也在快速崛起。
 
 ## 详细解析
 

@@ -5,7 +5,17 @@
 
 ## 简短回答
 
-Agent 代码的 Review 与普通业务代码有本质区别，因为 Agent 运行在一个**自主循环（Autonomous Loop）**中，每一轮迭代都涉及 **LLM 调用**和**外部工具执行**，错误代价远高于普通函数调用。一次合格的 Agent Code Review 至少需要检查六个维度：**循环保护（Loop Guard）**防止无限消耗 Token；**工具调用超时（Timeout）**避免单次调用阻塞整个 Agent；**结构化错误处理（Structured Error Handling）**而非简单吞掉异常；**Prompt 版本管理**确保可复现与可回滚；**可观测性（Observability）**覆盖 logging、tracing、metrics 三大支柱；以及**敏感操作确认（Human-in-the-Loop）**防止 Agent 自主执行破坏性操作。掌握这六个维度，就能系统性地发现初级 Agent 代码中的典型问题。
+Agent 代码的 Review 与普通业务代码有本质区别，因为 Agent 运行在一个**自主循环（Autonomous Loop）**中，每一轮迭代都涉及 **LLM 调用**和**外部工具执行**，错误代价远高于普通函数调用。
+
+**Agent Code Review 六大检查维度：**
+1. **循环保护（Loop Guard）** — 防止无限消耗 Token
+2. **工具调用超时（Timeout）** — 避免单次调用阻塞整个 Agent
+3. **结构化错误处理（Structured Error Handling）** — 而非简单吞掉异常
+4. **Prompt 版本管理** — 确保可复现与可回滚
+5. **可观测性（Observability）** — 覆盖 logging、tracing、metrics 三大支柱
+6. **敏感操作确认（Human-in-the-Loop）** — 防止 Agent 自主执行破坏性操作
+
+掌握这六个维度，就能系统性地发现初级 Agent 代码中的典型问题。
 
 ## 详细解析
 

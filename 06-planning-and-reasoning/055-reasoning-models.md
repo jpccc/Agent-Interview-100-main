@@ -5,7 +5,15 @@
 
 ## 简短回答
 
-Reasoning 模型（又称 Large Reasoning Models, LRMs）与标准 LLM 的核心区别是**测试时计算扩展（Test-Time Compute Scaling）**：标准模型接收输入后直接生成答案，Reasoning 模型会先进行内部"思考"——生成长链的推理 token（internal chain-of-thought），然后再输出最终答案。这种"先想后答"的能力通过**强化学习（RL）**训练获得，而非单纯的监督学习。代表模型包括 OpenAI o1/o3（闭源，RL 训练的推理链）、DeepSeek-R1（开源，纯 RL 自发现推理策略）和 Claude 的 extended thinking 模式（允许模型在生成最终回复前输出一段可配置预算的内部思考链，用户可通过 API 设置 `budget_tokens` 控制思考深度）。关键权衡：Reasoning 模型在数学、编程、科学推理上显著优于标准模型（o3 在 ARC-AGI 上达 87.5%），但延迟更高（思考时间 10s-60s+）、成本更高（思考 token 计费），且对简单任务过度思考反而降低效率。
+Reasoning 模型（又称 Large Reasoning Models, LRMs）与标准 LLM 的核心区别是 **测试时计算扩展（Test-Time Compute Scaling）**：标准模型接收输入后直接生成答案，Reasoning 模型会先进行内部“思考”——生成长链的推理 token（internal chain-of-thought），然后再输出最终答案。这种“先想后答”的能力通过 **强化学习（RL）** 训练获得，而非单纯的监督学习。
+
+**代表模型：**
+
+- **OpenAI o1/o3** — 闭源，RL 训练的推理链
+- **DeepSeek-R1** — 开源，纯 RL 自发现推理策略
+- **Claude extended thinking** — 允许模型在生成最终回复前输出一段可配置预算的内部思考链，用户可通过 API 设置 `budget_tokens` 控制思考深度
+
+**关键权衡：** Reasoning 模型在数学、编程、科学推理上显著优于标准模型（o3 在 ARC-AGI 上达 87.5%），但延迟更高（思考时间 10s-60s+）、成本更高（思考 token 计费），且对简单任务过度思考反而降低效率。
 
 ## 详细解析
 
@@ -26,47 +34,34 @@ Reasoning Model（如 o1/o3、DeepSeek-R1）：
 
 ### 训练方法的核心差异
 
-```python
-training_comparison = {
-    "标准 LLM": {
-        "预训练": "Next token prediction on large corpus",
-        "微调": "SFT (Supervised Fine-Tuning) on instruction data",
-        "对齐": "RLHF (基于人类偏好的 RL)",
-        "推理能力来源": "预训练数据中隐含的推理模式",
-    },
-    "Reasoning Model": {
-        "预训练": "Same as standard LLM",
-        "关键创新": "大规模 RL 训练推理能力",
-        "RL 奖励信号": "答案正确性（而非人类偏好）",
-        "推理能力来源": "RL 中自主发现的推理策略",
-    },
-}
+| 维度 | 标准 LLM | Reasoning Model |
+|------|----------|------------------|
+| **预训练** | Next token prediction on large corpus | 同标准 LLM |
+| **微调/对齐** | SFT + RLHF（基于人类偏好的 RL） | 大规模 RL 训练推理能力 |
+| **奖励信号** | 人类偏好 | 答案正确性（数学/代码可自动验证） |
+| **推理能力来源** | 预训练数据中隐含的推理模式 | RL 中自主发现的推理策略 |
 
-# DeepSeek-R1 的训练流程
-deepseek_r1_pipeline = [
-    "1. 基座模型（DeepSeek-V3）",
-    "2. Cold Start SFT：用少量高质量 CoT 数据微调",
-    "3. 大规模 RL：用 GRPO 算法训练",
-    "   - 奖励：答案是否正确（数学/代码可自动验证）",
-    "   - 模型自主学习：何时思考、思考多久、如何回溯",
-    "4. Rejection Sampling + SFT：用 RL 模型生成的好推理做 SFT",
-    "5. 第二轮 RL：进一步对齐",
-]
-```
+**DeepSeek-R1 训练流程：**
+
+1. 基座模型（DeepSeek-V3）
+2. Cold Start SFT：用少量高质量 CoT 数据微调
+3. 大规模 RL：用 GRPO 算法训练（奖励：答案是否正确；模型自主学习：何时思考、思考多久、如何回溯）
+4. Rejection Sampling + SFT：用 RL 模型生成的好推理做 SFT
+5. 第二轮 RL：进一步对齐
 
 ### 关键研究发现：R1-Zero 的涌现行为
 
-```python
-# DeepSeek-R1-Zero：纯 RL（不用任何 SFT）训练的惊人发现
-emergent_behaviors = {
-    "自发长思考": "模型自主学会生成长推理链，无需人工示范",
-    "Aha moment": "模型学会在推理中说'等一下，让我重新检查'",
-    "自我纠正": "发现错误后回溯到更早的推理步骤",
-    "多角度验证": "用不同方法验证同一结论",
-    "思考时间自适应": "简单问题思考少，难题思考多",
-}
-# 这些行为都是 RL 过程中自然涌现的，没有人工设计
-```
+> **DeepSeek-R1-Zero**：纯 RL（不用任何 SFT）训练的惊人发现
+
+| 涌现行为 | 说明 |
+|----------|------|
+| **自发长思考** | 模型自主学会生成长推理链，无需人工示范 |
+| **Aha moment** | 模型学会在推理中说“等一下，让我重新检查” |
+| **自我纠正** | 发现错误后回溯到更早的推理步骤 |
+| **多角度验证** | 用不同方法验证同一结论 |
+| **思考时间自适应** | 简单问题思考少，难题思考多 |
+
+> 这些行为都是 RL 过程中**自然涌现**的，没有人工设计。
 
 ### 基准测试对比
 
@@ -102,55 +97,42 @@ ARC-AGI（抽象推理）：
 
 ### Test-Time Compute Scaling
 
-```python
-# Reasoning 模型的核心范式转变：
-# 传统：提升性能 = 更大模型 + 更多训练数据（训练时扩展）
-# 新范式：提升性能 = 允许模型思考更久（推理时扩展）
+> **核心范式转变：**
+> 传统：提升性能 = 更大模型 + 更多训练数据（训练时扩展）
+> 新范式：提升性能 = 允许模型思考更久（推理时扩展）
 
-scaling_paradigms = {
-    "Train-Time Scaling": {
-        "方法": "增加参数量和训练数据",
-        "代表": "GPT-3 → GPT-4（模型更大）",
-        "局限": "边际收益递减（Scaling Law 放缓）",
-    },
-    "Test-Time Scaling": {
-        "方法": "增加推理时的计算量（更长的思考链）",
-        "代表": "o1 → o3（思考更久而非模型更大）",
-        "优势": "按需分配——简单题少想，难题多想",
-        "实现": "RL 训练模型学会自适应分配思考时间",
-    },
-}
-```
+| 维度 | Train-Time Scaling | Test-Time Scaling |
+|------|--------------------|--------------------|
+| **方法** | 增加参数量和训练数据 | 增加推理时的计算量（更长的思考链） |
+| **代表** | GPT-3 → GPT-4（模型更大） | o1 → o3（思考更久而非模型更大） |
+| **优势/局限** | 边际收益递减（Scaling Law 放缓） | 按需分配——简单题少想，难题多想 |
+| **实现方式** | 传统训练 | RL 训练模型学会自适应分配思考时间 |
 
 ### 使用场景指南
 
-```python
-use_reasoning_model = [
-    "数学竞赛和复杂计算",
-    "算法和编程竞赛题",
-    "科学推理和逻辑证明",
-    "复杂的多步推理任务",
-    "需要高准确率且不在乎延迟的场景",
-]
+| 场景 | 推荐模型 |
+|------|----------|
+| 数学竞赛和复杂计算 | Reasoning |
+| 算法和编程竞赛题 | Reasoning |
+| 科学推理和逻辑证明 | Reasoning |
+| 复杂的多步推理任务 | Reasoning |
+| 需要高准确率且不在乎延迟 | Reasoning |
+| 简单问答和信息检索 | 标准 |
+| 创意写作和内容生成 | 标准 |
+| 翻译和文本改写 | 标准 |
+| 实时对话（延迟敏感） | 标准 |
+| Agent 的常规工具选择决策 | 标准 |
+| 成本敏感的批量处理 | 标准 |
 
-use_standard_model = [
-    "简单问答和信息检索",
-    "创意写作和内容生成",
-    "翻译和文本改写",
-    "实时对话（延迟敏感）",
-    "Agent 的常规工具选择决策",
-    "成本敏感的批量处理",
-]
+**Agent 系统中的混合策略：**
 
-# Agent 系统中的混合策略
-hybrid_strategy = """
+```
 Agent Router：
   简单任务 → 标准模型（快速、便宜）
   复杂推理 → Reasoning 模型（准确、慢）
 
 关键决策点（如规划、关键判断）→ Reasoning 模型
 常规执行步骤（如信息检索、格式化）→ 标准模型
-"""
 ```
 
 ### 成本与延迟对比
@@ -177,51 +159,56 @@ Agent Router：
 
 ### 2025-2026 Reasoning 模型生态演进
 
-```python
-# 主流 Reasoning 模型谱系（按 2026-05 时间线）
-reasoning_models_2025_2026 = {
-    "OpenAI o 系列": {
-        "o1 / o1-pro":    "2024-09 / 12 闭源 RL CoT，开启 test-time compute scaling",
-        "o3 / o3-mini":   "2025-01 推理 + 工具调用，ARC-AGI 87.5%",
-        "o3-pro / o4":    "2025-09 / 2026-Q1 进一步扩 test-time scaling",
-        "GPT-5 / 5.3":    "2026-Q1+ 推理 + 通用合一，但仍可显式开 'thinking' 模式",
-    },
-    "Anthropic Claude (extended thinking)": {
-        "Sonnet 3.7":     "2025-02 首个支持 extended thinking 的 Claude，budget_tokens 控制思考深度",
-        "Sonnet 4 / 4.5": "2025-05 / 09 改进 thinking + 工具交错，引入 interleaved thinking",
-        "Opus 4 / 4.5":   "2025-05 / 09 推理 + Agent 长任务",
-        "Sonnet 4.6 / Opus 4.6": "2025-Q4 1M context + server-side compaction，长思考链稳定性大幅提升",
-        "Opus 4.7 / Mythos": "2026-05 SWE-bench Verified 87.6% / 93.9%（含 thinking）",
-    },
-    "DeepSeek 系列": {
-        "R1 / R1-Zero":   "2025-01 纯 GRPO RL 开源旗舰，Aha moment 涌现",
-        "R1-蒸馏 7B/14B/32B/70B": "蒸馏到小模型，1.5B 也能跑出可观推理能力",
-        "V3.x / R2":      "2025-2026 持续迭代，强化 agent 任务",
-    },
-    "Google Gemini": {
-        "2.5 Pro Thinking": "2025-Q2 引入 'Deep Think' 模式，AIME / HLE 显著提升",
-        "3.0 / 3.1 Thinking": "2026-Q1-Q2 多模态 + 推理融合，HLE SOTA 4x.x%",
-    },
-    "xAI Grok": {
-        "Grok 3 Reasoning / Grok 3 Heavy": "2025-Q1 推理模式 + 多 agent 重思考",
-        "Grok 4":                          "2025-2026 推理 + 工具",
-    },
-    "Qwen / 其他": {
-        "QwQ-32B-Preview":  "阿里 2024-11 开源 reasoning，长 CoT 风格独特",
-        "Qwen3-Thinking":   "2025-Q2 Qwen3 系列内置 thinking",
-        "Mistral / Moonshot Kimi K2 / GLM-4-Reasoning": "2025-2026 各家陆续推出",
-    },
-}
+> 主流 Reasoning 模型谱系（按 2026-05 时间线）
 
-# 设计模式归纳
-design_axes = {
-    "RL 信号":     "可验证奖励（数学/代码）已成共识；偏好/Judge 奖励作补充",
-    "思考预算":     "从'固定开关'演化为 budget_tokens / minimum_thinking_tokens 可控",
-    "Interleaved": "思考与工具调用交错（Claude / OpenAI Responses 都已支持）",
-    "Thinking 可见性": "OpenAI 默认隐藏 raw CoT，Anthropic / DeepSeek 默认可见，影响安全/可审计权衡",
-    "成本范式":     "thinking token 计费独立，预算控制成生产关键参数",
-}
-```
+**OpenAI o 系列：**
+
+| 模型 | 发布时间 | 关键特性 |
+|------|----------|----------|
+| o1 / o1-pro | 2024-09 / 12 | 闭源 RL CoT，开启 test-time compute scaling |
+| o3 / o3-mini | 2025-01 | 推理 + 工具调用，ARC-AGI 87.5% |
+| o3-pro / o4 | 2025-09 / 2026-Q1 | 进一步扩 test-time scaling |
+| GPT-5 / 5.3 | 2026-Q1+ | 推理 + 通用合一，仍可显式开 thinking 模式 |
+
+**Anthropic Claude (extended thinking)：**
+
+| 模型 | 发布时间 | 关键特性 |
+|------|----------|----------|
+| Sonnet 3.7 | 2025-02 | 首个支持 extended thinking，budget_tokens 控制思考深度 |
+| Sonnet 4 / 4.5 | 2025-05 / 09 | 改进 thinking + 工具交错，引入 interleaved thinking |
+| Opus 4 / 4.5 | 2025-05 / 09 | 推理 + Agent 长任务 |
+| Sonnet 4.6 / Opus 4.6 | 2025-Q4 | 1M context + server-side compaction，长思考链稳定性大幅提升 |
+| Opus 4.7 / Mythos | 2026-05 | SWE-bench Verified 87.6% / 93.9%（含 thinking） |
+
+**DeepSeek 系列：**
+
+| 模型 | 发布时间 | 关键特性 |
+|------|----------|----------|
+| R1 / R1-Zero | 2025-01 | 纯 GRPO RL 开源旗舰，Aha moment 涌现 |
+| R1-蒸馏 7B/14B/32B/70B | 2025-01 | 蒸馏到小模型，1.5B 也能跑出可观推理能力 |
+| V3.x / R2 | 2025-2026 | 持续迭代，强化 agent 任务 |
+
+**Google Gemini / xAI Grok / Qwen 及其他：**
+
+| 模型 | 发布时间 | 关键特性 |
+|------|----------|----------|
+| Gemini 2.5 Pro Thinking | 2025-Q2 | 引入 Deep Think 模式，AIME / HLE 显著提升 |
+| Gemini 3.0 / 3.1 Thinking | 2026-Q1-Q2 | 多模态 + 推理融合，HLE SOTA 4x.x% |
+| Grok 3 Reasoning / Heavy | 2025-Q1 | 推理模式 + 多 agent 重思考 |
+| Grok 4 | 2025-2026 | 推理 + 工具 |
+| QwQ-32B-Preview | 2024-11 | 阿里开源 reasoning，长 CoT 风格独特 |
+| Qwen3-Thinking | 2025-Q2 | Qwen3 系列内置 thinking |
+| Mistral / Kimi K2 / GLM-4-Reasoning | 2025-2026 | 各家陆续推出 |
+
+**设计模式归纳：**
+
+| 设计维度 | 现状与趋势 |
+|----------|----------|
+| **RL 信号** | 可验证奖励（数学/代码）已成共识；偏好/Judge 奖励作补充 |
+| **思考预算** | 从固定开关演化为 budget_tokens / minimum_thinking_tokens 可控 |
+| **Interleaved** | 思考与工具调用交错（Claude / OpenAI Responses 都已支持） |
+| **Thinking 可见性** | OpenAI 默认隐藏 raw CoT，Anthropic / DeepSeek 默认可见，影响安全/可审计权衡 |
+| **成本范式** | thinking token 计费独立，预算控制成生产关键参数 |
 
 ### Reasoning 模型在 Agent 中的应用
 

@@ -5,7 +5,23 @@
 
 ## 简短回答
 
-Agent 系统的灰度发布和 A/B 测试是安全上线变更的核心工程实践。**灰度发布（Canary Deployment）**——将新版本暴露给小比例流量（5%→25%→100%），持续监控质量指标，异常时自动回滚，确保技术稳定性。**A/B 测试**——同时运行两个版本，对比业务指标（任务成功率、用户满意度、成本），做出数据驱动的决策。Agent 系统的特殊挑战：输出非确定性（同一输入不同输出），质量评估需要 LLM-as-Judge 而非简单指标，多步执行使得变量控制更复杂。实施流程：(1) 离线评估通过质量门控 → (2) Shadow Testing（对生产流量运行新版本但不返回给用户）→ (3) Canary 发布（5-10% 流量）→ (4) 逐步扩量，每步都有自动回滚触发器。关键指标：任务成功率、首次解决率、延迟 P95、每会话成本、幻觉检测率、升级率。工具链：Feature Flags（LaunchDarkly）+ AI Gateway（Portkey/LiteLLM）+ 监控（Langfuse）+ Progressive Delivery（Argo Rollouts/Flagger）。
+Agent 系统的灰度发布和 A/B 测试是安全上线变更的核心工程实践。
+
+**灰度发布（Canary Deployment）：** 将新版本暴露给小比例流量（5%→25%→100%），持续监控质量指标，异常时自动回滚，确保技术稳定性。
+
+**A/B 测试：** 同时运行两个版本，对比业务指标（任务成功率、用户满意度、成本），做出数据驱动的决策。
+
+**Agent 系统的特殊挑战：** 输出非确定性（同一输入不同输出），质量评估需要 LLM-as-Judge 而非简单指标，多步执行使得变量控制更复杂。
+
+**实施流程：**
+1. 离线评估通过质量门控
+2. Shadow Testing（对生产流量运行新版本但不返回给用户）
+3. Canary 发布（5-10% 流量）
+4. 逐步扩量，每步都有自动回滚触发器
+
+**关键指标：** 任务成功率、首次解决率、延迟 P95、每会话成本、幻觉检测率、升级率。
+
+**工具链：** Feature Flags（LaunchDarkly）+ AI Gateway（Portkey/LiteLLM）+ 监控（Langfuse）+ Progressive Delivery（Argo Rollouts/Flagger）。
 
 ## 详细解析
 

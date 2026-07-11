@@ -5,7 +5,17 @@
 
 ## 简短回答
 
-结构化输出是让 LLM 返回机器可解析格式（JSON、XML 等）而非自由文本的技术，是 Agent 系统和数据管道的基础能力。主要实现方法有四种：(1) **Prompt 指令**——在 Prompt 中描述期望格式，最简单但不保证合规；(2) **JSON Mode**——API 级别强制输出合法 JSON，保证语法正确但不保证 Schema 匹配；(3) **Function Calling / Tool Use**——定义函数签名让 LLM 填参数，最适合 Agent 工具调用；(4) **Constrained Decoding**——在解码层面约束 token 生成，100% 保证格式合规（如 Outlines、Guidance）。生产环境推荐 **Function Calling + Pydantic 验证**：Function Calling 处理格式，Pydantic 验证语义。OpenAI 自 openai-python 1.92 起 `client.chat.completions.parse` 已 GA，Responses API 提供 `client.responses.parse` 作为新项目首选；**Anthropic 也已于 2025-11-14 公开 Beta 原生 Structured Outputs**（`anthropic-beta: structured-outputs-2025-11-13` + `client.messages.parse`），底层 constrained decoding 100% Schema 合规——这是 2026 面试的核心新原语。
+结构化输出是让 LLM 返回机器可解析格式（JSON、XML 等）而非自由文本的技术，是 Agent 系统和数据管道的基础能力。
+
+**主要实现方法：**
+1. **Prompt 指令** — 在 Prompt 中描述期望格式，最简单但不保证合规
+2. **JSON Mode** — API 级别强制输出合法 JSON，保证语法正确但不保证 Schema 匹配
+3. **Function Calling / Tool Use** — 定义函数签名让 LLM 填参数，最适合 Agent 工具调用
+4. **Constrained Decoding** — 在解码层面约束 token 生成，100% 保证格式合规（如 Outlines、Guidance）
+
+**生产推荐：** Function Calling + Pydantic 验证——Function Calling 处理格式，Pydantic 验证语义。
+
+**API 演进：** OpenAI 自 openai-python 1.92 起 `client.chat.completions.parse` 已 GA，Responses API 提供 `client.responses.parse` 作为新项目首选；Anthropic 也已于 2025-11-14 公开 Beta 原生 Structured Outputs（`anthropic-beta: structured-outputs-2025-11-13` + `client.messages.parse`），底层 constrained decoding 100% Schema 合规——这是 2026 面试的核心新原语。
 
 ## 详细解析
 

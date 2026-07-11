@@ -5,7 +5,16 @@
 
 ## 简短回答
 
-Agent 系统的延迟优化是生产部署的核心挑战——多步 Agent 工作流经常超过 15 秒，而用户在 3 秒后就开始流失（Nielsen Norman Group 研究）。三大核心优化手段：(1) **Streaming（流式输出）**——Token 级别实时推送，将"感知延迟"从等待完整回答的数秒降低到首个 Token 的几百毫秒（TTFT）；(2) **缓存**——多层缓存策略（KV Cache 加速推理、Prompt Cache 复用前缀处理、Semantic Cache 复用相似请求、**Agentic Plan Cache** 复用 Agent 规划模板），可实现 27-73% 的延迟降低；(3) **批处理**——将多个请求合并处理提高 GPU 利用率，Continuous Batching 相比 Static Batching 可提升吞吐量 23 倍。此外还有：**模型路由**（简单任务用快模型）、**并行工具调用**（独立工具同时执行）、**预计算**（提前生成常见回答）。2025 年前沿研究 **Agentic Plan Caching (APC)**（NeurIPS 2025）专门针对 Agent 场景，通过缓存和复用规划模板平均减少 27.28% 延迟和 50.31% 成本。
+Agent 系统的延迟优化是生产部署的核心挑战——多步 Agent 工作流经常超过 15 秒，而用户在 3 秒后就开始流失（Nielsen Norman Group 研究）。
+
+**三大核心优化手段：**
+1. **Streaming（流式输出）** — Token 级别实时推送，将“感知延迟”从等待完整回答的数秒降低到首个 Token 的几百毫秒（TTFT）
+2. **缓存** — 多层缓存策略（KV Cache 加速推理、Prompt Cache 复用前缀处理、Semantic Cache 复用相似请求、**Agentic Plan Cache** 复用 Agent 规划模板），可实现 27-73% 的延迟降低
+3. **批处理** — 将多个请求合并处理提高 GPU 利用率，Continuous Batching 相比 Static Batching 可提升吞吐量 23 倍
+
+**其他策略：** 模型路由（简单任务用快模型）、并行工具调用（独立工具同时执行）、预计算（提前生成常见回答）。
+
+> **2025 前沿研究 Agentic Plan Caching (APC)**（NeurIPS 2025）专门针对 Agent 场景，通过缓存和复用规划模板平均减少 27.28% 延迟和 50.31% 成本。
 
 ## 详细解析
 

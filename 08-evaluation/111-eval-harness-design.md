@@ -251,28 +251,16 @@ Sandbox 同时承担两个职责：(1) **安全**——隔离 Agent 可能产生
 
 ### 选型决策树
 
-```
-你的场景是什么？
-│
-├── 学术 LLM benchmark（单轮 logprob/生成）
-│   → lm-evaluation-harness
-│   → HF Open LLM Leaderboard 后端，60+ 任务、100+ providers
-│
-├── Agent 多轮 + sandbox + 工具
-│   → Inspect AI（事实标准）
-│   → 200+ inspect_evals、可桥接所有主流 Agent SDK
-│
-├── 多维度全景（含 bias/toxicity/efficiency）
-│   → HELM（Stanford CRFM）
-│   → 7 metrics + 2025-03 Capabilities 5 切面
-│
-├── Pre-deployment safety eval / 能力外推
-│   → METR 范式 + Inspect
-│   → Time Horizon + MALT dataset
-│
-└── 商业评测平台（trace + UI + 协作）
-    → 见 075（Ragas / LangSmith / Braintrust / Langfuse）
-```
+- **学术 LLM benchmark（单轮 logprob/生成）** → **lm-evaluation-harness**
+  - HF Open LLM Leaderboard 后端，60+ 任务、100+ providers
+- **Agent 多轮 + sandbox + 工具** → **Inspect AI**（事实标准）
+  - 200+ inspect_evals、可桥接所有主流 Agent SDK
+- **多维度全景（含 bias/toxicity/efficiency）** → **HELM**（Stanford CRFM）
+  - 7 metrics + 2025-03 Capabilities 5 切面
+- **Pre-deployment safety eval / 能力外推** → **METR 范式 + Inspect**
+  - Time Horizon + MALT dataset
+- **商业评测平台（trace + UI + 协作）** → 见 [075 评估工具对比](./075-evaluation-tools-comparison.md)
+  - Ragas / LangSmith / Braintrust / Langfuse
 
 ## 常见误区 / 面试追问
 

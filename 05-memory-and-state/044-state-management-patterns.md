@@ -5,7 +5,15 @@
 
 ## 简短回答
 
-Agent 系统的状态管理决定了"Agent 在任意时刻知道什么、做过什么、下一步该做什么"。核心设计模式包括：**共享状态图（LangGraph 模式）**——用 TypedDict 定义全局状态，通过 Reducer 函数合并并发更新，内置 Checkpointing 实现持久化和恢复；**事件溯源（Event Sourcing）**——记录所有状态变更事件而非最终状态，支持完整回放和审计；**有限状态机（FSM）**——用明确的状态和转移规则管理流程；**黑板模式**——共享空间让多 Agent 自主读写。LangGraph 的 State + Reducer + Checkpoint 模式已成为业界主流，被 Klarna、Replit 等企业用于生产。
+Agent 系统的状态管理决定了“Agent 在任意时刻知道什么、做过什么、下一步该做什么”。
+
+**核心设计模式：**
+- **共享状态图（LangGraph 模式）** — 用 TypedDict 定义全局状态，通过 Reducer 函数合并并发更新，内置 Checkpointing 实现持久化和恢复
+- **事件溯源（Event Sourcing）** — 记录所有状态变更事件而非最终状态，支持完整回放和审计
+- **有限状态机（FSM）** — 用明确的状态和转移规则管理流程
+- **黑板模式** — 共享空间让多 Agent 自主读写
+
+**业界主流：** LangGraph 的 State + Reducer + Checkpoint 模式已被 Klarna、Replit 等企业用于生产。
 
 ## 详细解析
 

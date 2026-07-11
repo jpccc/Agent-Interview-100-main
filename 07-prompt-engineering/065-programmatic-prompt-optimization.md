@@ -5,7 +5,19 @@
 
 ## 简短回答
 
-自动化 Prompt 优化是 2024-2026 业界共识的 Prompt Engineering 演进方向——把"手写字符串、人工迭代"升级为"声明任务+算法搜索"。主流方案分两大流派：(1) **DSPy 流派**（Stanford NLP）——"**编程而非提示**"，用 Python 代码声明 Signature 和 Module，由优化器自动生成 Prompt + Few-shot 示例。代表算法：**BootstrapFewShot**（trace 模型自身成功调用做自举）、**MIPROv2**（贝叶斯优化搜索指令+示例组合）、**SIMBA**（2025 新增，基于 LLM 反思的迭代式优化）。(2) **元提示流派**——LLM 直接生成和优化 Prompt 字符串。代表算法：**APE**（Automatic Prompt Engineer，生成候选+验证集筛选）、**OPRO**（Google DeepMind，用历史 Prompt+得分作为上下文让 LLM 生成更好的 Prompt）、**PromptBreeder**（进化算法，变异+选择+交叉）。两派核心差异：**DSPy 优化结构化组件**（签名+示例），可组合、可移植；**元提示直接优化字符串**，更简单直接但难复用。生产实践：DSPy 适合长期维护的复杂管道，元提示适合单任务 Prompt 调优。研究表明，自动生成的 Prompt 在多数任务上达到甚至超越人类专家手工编写的 Prompt。
+自动化 Prompt 优化是 2024-2026 业界共识的 Prompt Engineering 演进方向——把“手写字符串、人工迭代”升级为“声明任务 + 算法搜索”。
+
+**两大流派：**
+
+1. **DSPy 流派（Stanford NLP）**— “编程而非提示”，用 Python 代码声明 Signature 和 Module，由优化器自动生成 Prompt + Few-shot 示例
+   - 代表算法：**BootstrapFewShot**（trace 模型自身成功调用做自举）、**MIPROv2**（贝叶斯优化搜索指令+示例组合）、**SIMBA**（2025 新增，基于 LLM 反思的迭代式优化）
+
+2. **元提示流派** — LLM 直接生成和优化 Prompt 字符串
+   - 代表算法：**APE**（生成候选+验证集筛选）、**OPRO**（Google DeepMind，用历史 Prompt+得分作为上下文）、**PromptBreeder**（进化算法，变异+选择+交叉）
+
+**核心差异：** DSPy 优化结构化组件（签名+示例），可组合、可移植；元提示直接优化字符串，更简单直接但难复用。
+
+**生产实践：** DSPy 适合长期维护的复杂管道，元提示适合单任务 Prompt 调优。研究表明，自动生成的 Prompt 在多数任务上达到甚至超越人类专家手工编写的 Prompt。
 
 ## 详细解析
 
