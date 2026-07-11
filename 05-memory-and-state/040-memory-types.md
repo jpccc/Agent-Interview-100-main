@@ -17,15 +17,9 @@ LLM Agent 的记忆系统借鉴认知科学，分为三种核心类型：
 
 ### LLM 的记忆本质
 
-```
-核心事实：LLM 本身是无状态的
-每次 API 调用都是独立的——模型不会"记住"之前的调用。
-
-产品层面的"记忆"（如 ChatGPT 记住你的名字）是在 LLM 之上
-工程化实现的记忆层，不是模型的固有能力。
-
-构建 Agent 时，你需要自己实现这个记忆层。
-```
+> **核心事实：LLM 本身是无状态的**
+>
+> 每次 API 调用都是独立的——模型不会"记住"之前的调用。产品层面的"记忆"（如 ChatGPT 记住你的名字）是在 LLM 之上工程化实现的记忆层，不是模型的固有能力。构建 Agent 时，你需要自己实现这个记忆层。
 
 ### 短期记忆（Short-Term Memory / STM）
 
@@ -79,53 +73,35 @@ class LongTermMemory:
 
 长期记忆的三个认知子类型（LangMem 框架）：
 
-```python
-memory_subtypes = {
-    "语义记忆 (Semantic)": {
-        "定义": "事实和知识——Agent 知道的东西",
-        "示例": "用户偏好、产品知识、规则",
-        "存储": "向量数据库 Collection 或结构化 Profile",
-        "检索": "按语义相似度搜索",
-    },
-    "情景记忆 (Episodic)": {
-        "定义": "经历和事件——Agent 做过的事",
-        "示例": "成功解决问题的完整交互记录",
-        "存储": "带上下文的完整交互日志",
-        "检索": "按情境相似度检索（类似 few-shot）",
-    },
-    "程序记忆 (Procedural)": {
-        "定义": "技能和流程——Agent 知道怎么做",
-        "示例": "System Prompt 中的规则和步骤",
-        "存储": "Prompt 模板、规则引擎",
-        "检索": "通常固定加载，不动态检索",
-    },
-}
-```
+| 子类型 | 定义 | 示例 | 存储方式 | 检索方式 |
+|---------|------|------|---------|----------|
+| **语义记忆** (Semantic) | 事实和知识——Agent 知道的东西 | 用户偏好、产品知识、规则 | 向量数据库 Collection 或结构化 Profile | 按语义相似度搜索 |
+| **情景记忆** (Episodic) | 经历和事件——Agent 做过的事 | 成功解决问题的完整交互记录 | 带上下文的完整交互日志 | 按情境相似度检索（类似 few-shot） |
+| **程序记忆** (Procedural) | 技能和流程——Agent 知道怎么做 | System Prompt 中的规则和步骤 | Prompt 模板、规则引擎 | 通常固定加载，不动态检索 |
 
 ### 工作记忆（Working Memory）
 
 ```python
 # 工作记忆 = 当前上下文窗口中的所有信息
-# 包括：System Prompt + 对话历史 + 检索到的长期记忆 + 工具结果
-
-working_memory = {
-    "system_prompt": "你是客服助手...",           # 程序记忆
-    "user_profile": "用户偏好：简洁回答",          # 从长期记忆检索
-    "relevant_docs": ["退款政策: ...", "退货流程: ..."],  # RAG 检索
-    "conversation": [...],                        # 短期记忆
-    "tool_results": {"order_status": "shipped"},  # 工具调用结果
-}
-
 # 所有这些组合起来 = Agent 当前"能想到"的全部信息
 context_window = format_for_llm(working_memory)
 response = llm.invoke(context_window)
 ```
 
+**工作记忆的组成：**
+
+| 组成部分 | 说明 | 来源 |
+|---------|------|------|
+| **System Prompt** | 角色定义与规则 | 程序记忆 |
+| **User Profile** | 用户偏好等信息 | 从长期记忆检索 |
+| **Relevant Docs** | RAG 检索的相关文档 | 从长期记忆检索 |
+| **Conversation** | 当前对话历史 | 短期记忆 |
+| **Tool Results** | 工具调用返回的结果 | 工具执行 |
+
 **类比操作系统：**
-```
-上下文窗口（工作记忆）≈ RAM（当前运行的程序可直接访问，容量有限）
-长期记忆（外部存储）≈ 硬盘（大容量但需要读取操作）
-```
+
+> 上下文窗口（工作记忆）≈ **RAM**（当前运行的程序可直接访问，容量有限）
+> 长期记忆（外部存储）≈ **硬盘**（大容量但需要读取操作）
 
 MemGPT 正是基于这个类比，实现了类似操作系统虚拟内存的机制——自动在"内存"（上下文窗口）和"磁盘"（外部存储）之间移动数据。
 
@@ -161,17 +137,15 @@ class MemoryManager:
 
 2026 年 1 月提出的 AgeMem 框架将记忆操作暴露为工具调用，让 Agent 自主决定何时存储、检索、更新、摘要或丢弃信息：
 
-```python
-# AgeMem：记忆操作即工具
-memory_tools = [
-    {"name": "memory_store", "description": "存储重要信息到长期记忆"},
-    {"name": "memory_retrieve", "description": "从长期记忆中检索相关信息"},
-    {"name": "memory_update", "description": "更新已有的记忆条目"},
-    {"name": "memory_summarize", "description": "将多条记忆合并为摘要"},
-    {"name": "memory_forget", "description": "删除不再需要的记忆"},
-]
-# Agent 在任务执行中自主调用这些工具管理记忆
-```
+| 工具名称 | 功能 |
+|---------|------|
+| `memory_store` | 存储重要信息到长期记忆 |
+| `memory_retrieve` | 从长期记忆中检索相关信息 |
+| `memory_update` | 更新已有的记忆条目 |
+| `memory_summarize` | 将多条记忆合并为摘要 |
+| `memory_forget` | 删除不再需要的记忆 |
+
+> Agent 在任务执行中自主调用这些工具管理记忆。
 
 ### 官方原语：Anthropic Memory Tool（memory_20250818，2025-08）
 
