@@ -1,0 +1,18 @@
+.DS_Store
+.claude/
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Auto Loop
+auto-loop-state.md
+.auto-loop-off
+auto-loop-log.md
+
+# Docs
+docs/
+
+# Working reports (Phase 1/2/4 临时输出)
+.work/
